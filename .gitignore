@@ -1,0 +1,5 @@
+flask_session/
+env/
+.vscode/
+__pycache__/
+.env
