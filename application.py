@@ -1,7 +1,9 @@
 import os
 import csv
 
-from flask import Flask, session, jsonify, redirect, render_template, requests, url_for
+import requests
+
+from flask import Flask, session, jsonify, redirect, render_template, request, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -28,6 +30,5 @@ def index():
     # Access test goodreads API
     res = requests.get("https://www.goodreads.com/book/review_counts.json",
                        params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
-    print(res.json())
 
-    return render_template("index.html", res)
+    return render_template("index.html", res=res.json())
