@@ -7,6 +7,7 @@ from flask import Flask, session, jsonify, redirect, render_template, request, u
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
@@ -28,15 +29,6 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
 
     return render_template('index.html')
-
-
-@app.route("/search")
-def search():
-
-    # Access test goodreads API
-    res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                       params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
-    return render_template('search.html')
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -68,13 +60,40 @@ def login():
     else:
         return render_template("login.html")
 
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id and username
+    session.clear()
+
+    # Redirect user to home page
+    return redirect("/")
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register new user"""
 
-
-    # User reached route via POST (as by submitting a form via POST)
+    # User submitted form
     if request.method == "POST":
+
+        password = request.form.get("password")
+        confirm = request.form.get("confirm-password")
+
+        if not password == confirm:
+            err = "Sorry! These passwords don't match."
+            return render_template("register.html", error='yes', err=err)
+        elif len(password) < 8 or len(password) > 16:
+            err = "Sorry! Passwords must be 8 - 16 characters long."
+            return render_template("register.html", error='yes', err=err)
+        elif password.isalpha():
+            err = "Sorry! Passwords must contain both letters and numbers."
+            return render_template("register.html", error='yes', err=err)
+        elif password.isnumeric():
+            err = "Sorry! Passwords must contain both letters and numbers."
+            return render_template("register.html", error='yes', err=err)
 
         # Redirect user to login page
         return redirect("/login")
@@ -82,3 +101,12 @@ def register():
     # User reached route via GET
     else:
         return render_template("register.html")
+
+
+@app.route("/search")
+def search():
+
+    # Access test goodreads API
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
+    return render_template('search.html', res)
