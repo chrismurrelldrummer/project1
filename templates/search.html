@@ -8,4 +8,35 @@ Search
 
 <h1>{{res}}</h1>
 
+<form action="{{url_for('search', type='isbn')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by ISBN:</label>
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="ISBN" name="isbn">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<form action="{{url_for('search', type='title')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by Title:</label>
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Title" name="title">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<form action="{{url_for('search', type='author')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by Author:</label>
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Author" name="author">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+
 {% endblock %}

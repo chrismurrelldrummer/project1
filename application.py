@@ -54,7 +54,7 @@ def login():
         session["username"] = rows[0]["username"]
 
         # Redirect user to search page
-        return redirect("/search")
+        return redirect("/search/search")
 
     # User reached route via GET
     else:
@@ -103,10 +103,20 @@ def register():
         return render_template("register.html")
 
 
-@app.route("/search")
-def search():
+@app.route("/search/<string:type>", methods=["GET", "POST"])
+def search(type):
 
-    # Access test goodreads API
-    res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                       params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
-    return render_template('search.html', res)
+    if request.method == 'post'
+        if type == 'isbn':
+            # Access test goodreads API
+            res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                            params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
+        elif type == 'title':
+            # query API for title or partial
+        elif type == 'author':
+            # query API for author or partial
+        else:
+            return render_template('error', err='Something went wrong!')
+    
+    else:
+        return render_template('search.html', res=res.json())
