@@ -1,1 +1,7 @@
-/* No CSS *//*# sourceMappingURL=altstyles.css.map */
+.error p {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
+  color: red;
+}
+/*# sourceMappingURL=altstyles.css.map */

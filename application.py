@@ -42,11 +42,11 @@ def login():
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username")).fetchall()
+                          {"username":request.form.get("username")}).fetchone()
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return render_template('error', err="Invalid username and/or password", code=403)
+            return render_template('error.html', err="Invalid username and/or password", code=403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -75,13 +75,26 @@ def logout():
 def register():
     """Register new user"""
 
+    # Forget any user_id and username
+    session.clear()
+
     # User submitted form
     if request.method == "POST":
 
+        firstname = request.form.get("firstname")
+        surname = request.form.get("surname")
+        username = request.form.get("username")
         password = request.form.get("password")
-        confirm = request.form.get("confirm-password")
+        confirm = request.form.get("confirm")
 
-        if not password == confirm:
+        # Query database for existing username
+        users = db.execute("SELECT * FROM users WHERE username = :username",
+                           {"username":username}).fetchone()
+
+        if users:
+            err = "Sorry! There is an account already registered with this username. Please select another or log in."
+            return render_template("register.html", error='yes', err=err)
+        elif not password == confirm:
             err = "Sorry! These passwords don't match."
             return render_template("register.html", error='yes', err=err)
         elif len(password) < 8 or len(password) > 16:
@@ -93,6 +106,14 @@ def register():
         elif password.isnumeric():
             err = "Sorry! Passwords must contain both letters and numbers."
             return render_template("register.html", error='yes', err=err)
+
+        # hash password
+        passhash = generate_password_hash(password)
+
+        # insert user into db
+        db.execute("INSERT INTO users (firstname, surname, username, hash) VALUES (:fn, :sn, :un, :h)",
+                   {"fn":firstname, "sn":surname, "un":username, "h":passhash})
+        db.commit()
 
         # Redirect user to login page
         return redirect("/login")
@@ -113,7 +134,7 @@ def search(type):
             # Access goodreads API
             res = requests.get("https://www.goodreads.com/book/review_counts.json",
                                params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
-            res = re.json()
+            res = res.json()
 
             return render_template('results', res=res)
 
@@ -124,7 +145,7 @@ def search(type):
             # query API for title or partial
             res = requests.get("https://www.goodreads.com/book/review_counts.json",
                                params={"key": "q6gj5umJdwuDCz5OX61pwg", "titles": title})
-            res = re.json()
+            res = res.json()
 
             return render_template('results', res=res)
 
@@ -135,7 +156,7 @@ def search(type):
             # query API for author or partial
             res = requests.get("https://www.goodreads.com/book/review_counts.json",
                                params={"key": "q6gj5umJdwuDCz5OX61pwg", "authors": author})
-            res = re.json()
+            res = res.json()
 
             return render_template('results', res=res)
 

@@ -1,0 +1,12 @@
+// define colour schemes
+$error : red;
+
+// elements
+.error {
+    p {
+        text-align: center;
+        font-size: x-large;
+        font-weight: bold;
+        color: $error;
+    }
+}

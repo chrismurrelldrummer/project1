@@ -8,6 +8,12 @@ Register
 
 <h1>Registration</h1>
 
+{% if error == 'yes' %}
+<div class="error">
+    <p>{{ err }}</p>
+</div>
+{% endif %}
+
 <form action="/register" method="POST">
     <div class="form-row">
         <div class="col-md-6 form-group">
@@ -34,7 +40,7 @@ Register
         </div>
     </div>
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">Log In</button>
+        <button class="btn btn-primary" type="submit">Register Me</button>
     </div>
 
-{% endblock %}
+    {% endblock %}
