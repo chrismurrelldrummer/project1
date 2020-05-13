@@ -1,5 +1,4 @@
 import os
-import csv
 
 import requests
 
@@ -106,17 +105,42 @@ def register():
 @app.route("/search/<string:type>", methods=["GET", "POST"])
 def search(type):
 
-    if request.method == 'post'
+    if request.method == 'post':
         if type == 'isbn':
-            # Access test goodreads API
+
+            isbn = request.form.get('isbn')
+
+            # Access goodreads API
             res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                            params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": "9781632168146"})
+                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
+            res = re.json()
+
+            return render_template('results', res=res)
+
         elif type == 'title':
+
+            title = request.form.get('title')
+
             # query API for title or partial
+            res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "titles": title})
+            res = re.json()
+
+            return render_template('results', res=res)
+
         elif type == 'author':
+
+            author = request.form.get('author')
+
             # query API for author or partial
+            res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "authors": author})
+            res = re.json()
+
+            return render_template('results', res=res)
+
         else:
             return render_template('error', err='Something went wrong!')
-    
+
     else:
-        return render_template('search.html', res=res.json())
+        return render_template('search.html')

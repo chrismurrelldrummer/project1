@@ -1,12 +1,16 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-Search
+Search Results
 {% endblock %}
 
 {% block main %}
 
-<h1>{{res}}</h1>
+<h1>Search Results</h1>
+
+<p>{{ res }}</p>
+
+<hr>
 
 <form action="{{url_for('search', type='isbn')}}" method="POST">
     <div class="form-group">
