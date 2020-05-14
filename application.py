@@ -241,6 +241,39 @@ def results(type):
                     search = f'Exact results for "{author}" could not be found.'
                     return render_template('results.html', result=result, others=others, search=search, matches=matches)
 
+        elif type == 'quicksearch':
+
+            # define unknown type variable
+            search = request.form.get('quicksearch')
+
+            # query db
+            result = db.execute(
+                "SELECT * FROM books WHERE isbn = :isbn OR title = :title OR author = :author", {"isbn": search, "title": search, "author": search}).fetchall()
+
+            if result:
+
+                search = f'Exact match for "{search}"'
+                return render_template('results.html', result=result, search=search)
+
+            elif not result:
+
+                # Look for partial match in db
+                part = '%' + search + '%'
+
+                others = db.execute(
+                    "SELECT * FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author", {"isbn": part, "title": part, "author": part}).fetchall()
+
+                matches = db.execute(
+                    "SELECT COUNT(*) FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author", {"isbn": part, "title": part, "author": part}).fetchone()
+                matches = matches[0]
+
+                if not others:
+                    search = f'No matches for "{search}"'
+                    return render_template('results.html', result=result, others=others, search=search)
+                else:
+                    search = f'Exact results for "{search}" could not be found.'
+                    return render_template('results.html', result=result, others=others, search=search, matches=matches)
+
         else:
             return render_template('error', err='Something went wrong!')
 

@@ -17,59 +17,114 @@ Search Results
 </div>
 {% endif %}
 
-<h3>{{ search }}</h3>
-
-<!-- structure with a card that has tooggles for list and grid view??? -->
 
 {% if result %}
-{% for row in result %}
-<p>{{ row }}</p>
-<hr>
-{% endfor %}
+<!-- list view -->
+<div class="card">
+    <div class="card-header">
+        <h3>{{ search }}</h3>
+    </div>
+
+    <div class="card-body">
+        {% for row in result %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ row['title'] }}</h5>
+                <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year: {{ row['year'] }}</p>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+    </div>
+    <div class="card-footer text-muted">
+        Page 1 of 1
+    </div>
+</div>
+
 {% elif others %}
-<h4>Did you mean?</h4>
-<p>Number of partial matches: {{ matches }}</p>
-{% for row in others %}
-<p>{{ row }}</p>
-<hr>
-{% endfor %}
+
+<div class="card">
+
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-9">
+                <h3>{{ search }}</h3>
+            </div>
+            <div class="col-md-3">
+                Number of partial matches: {{ matches }}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Did you mean?</h4>
+            </div>
+        </div>
+
+        {% for row in others %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ row['title'] }}</h5>
+                        <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year:
+                            {{ row['year'] }}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="card-footer text-muted">
+        Page 1 of 1
+    </div>
+</div>
 {% endif %}
 
-<form action="{{url_for('results', type='isbn')}}" method="POST">
-    <div class="form-group">
-        <label for="isbn">Search by ISBN:</label>
-        <div class="input-group mb-3">
-            <input class="form-control" type="text" placeholder="ISBN" name="isbn">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
+
+<div>
+    <form action="{{url_for('results', type='isbn')}}" method="POST">
+        <div class="form-group">
+            <label for="isbn">Search by ISBN:</label>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" placeholder="ISBN" name="isbn">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
-<form action="{{url_for('results', type='title')}}" method="POST">
-    <div class="form-group">
-        <label for="isbn">Search by Title:</label>
-        <div class="input-group mb-3">
-            <input class="form-control" type="text" placeholder="Title" name="title">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
+    <form action="{{url_for('results', type='title')}}" method="POST">
+        <div class="form-group">
+            <label for="isbn">Search by Title:</label>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" placeholder="Title" name="title">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
-<form action="{{url_for('results', type='author')}}" method="POST">
-    <div class="form-group">
-        <label for="isbn">Search by Author:</label>
-        <div class="input-group mb-3">
-            <input class="form-control" type="text" placeholder="Author" name="author">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
+    <form action="{{url_for('results', type='author')}}" method="POST">
+        <div class="form-group">
+            <label for="isbn">Search by Author:</label>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" placeholder="Author" name="author">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
-
+    </form>
+</div>
 
 {% endblock %}
