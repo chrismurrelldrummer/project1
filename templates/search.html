@@ -6,9 +6,18 @@ Search
 
 {% block main %}
 
-<h1>{{res}}</h1>
+<h1>Search</h1>
 
-<form action="{{url_for('search', type='isbn')}}" method="POST">
+{% if error == 'yes' %}
+<div class="alert alert-danger" role="alert">
+    <strong>{{ err }}</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+
+<form action="{{url_for('results', type='isbn')}}" method="POST">
     <div class="form-group">
         <label for="isbn">Search by ISBN:</label>
         <div class="input-group mb-3">
@@ -20,7 +29,7 @@ Search
     </div>
 </form>
 
-<form action="{{url_for('search', type='title')}}" method="POST">
+<form action="{{url_for('results', type='title')}}" method="POST">
     <div class="form-group">
         <label for="isbn">Search by Title:</label>
         <div class="input-group mb-3">
@@ -32,7 +41,7 @@ Search
     </div>
 </form>
 
-<form action="{{url_for('search', type='author')}}" method="POST">
+<form action="{{url_for('results', type='author')}}" method="POST">
     <div class="form-group">
         <label for="isbn">Search by Author:</label>
         <div class="input-group mb-3">

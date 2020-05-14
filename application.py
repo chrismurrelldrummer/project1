@@ -8,6 +8,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from functions import login_required
+
 app = Flask(__name__)
 
 # Check for environment variable
@@ -40,20 +42,23 @@ def login():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
+        username = request.form.get("username")
+        password = request.form.get("password")
+
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          {"username":request.form.get("username")}).fetchone()
+                          {"username": username}).fetchone()
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if not rows or not check_password_hash(rows["hash"], password):
             return render_template('error.html', err="Invalid username and/or password", code=403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-        session["username"] = rows[0]["username"]
+        session["user_id"] = rows["id"]
+        session["username"] = rows["username"]
 
         # Redirect user to search page
-        return redirect("/search/search")
+        return redirect("/search")
 
     # User reached route via GET
     else:
@@ -61,6 +66,7 @@ def login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     """Log user out"""
 
@@ -89,7 +95,7 @@ def register():
 
         # Query database for existing username
         users = db.execute("SELECT * FROM users WHERE username = :username",
-                           {"username":username}).fetchone()
+                           {"username": username}).fetchone()
 
         if users:
             err = "Sorry! There is an account already registered with this username. Please select another or log in."
@@ -112,7 +118,7 @@ def register():
 
         # insert user into db
         db.execute("INSERT INTO users (firstname, surname, username, hash) VALUES (:fn, :sn, :un, :h)",
-                   {"fn":firstname, "sn":surname, "un":username, "h":passhash})
+                   {"fn": firstname, "sn": surname, "un": username, "h": passhash})
         db.commit()
 
         # Redirect user to login page
@@ -123,45 +129,142 @@ def register():
         return render_template("register.html")
 
 
-@app.route("/search/<string:type>", methods=["GET", "POST"])
-def search(type):
+@app.route("/search", methods=["GET"])
+@login_required
+def search():
+    return render_template('search.html')
 
-    if request.method == 'post':
+
+@app.route("/search/<string:type>", methods=["POST"])
+@login_required
+def results(type):
+
+    if request.method == 'POST':
+
         if type == 'isbn':
 
+            # define initial variables
             isbn = request.form.get('isbn')
 
-            # Access goodreads API
-            res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
-            res = res.json()
+            # query db
+            result = db.execute(
+                "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
 
-            return render_template('results', res=res)
+            if result:
+
+                search = f'Exact match for "{isbn}"'
+
+                return render_template('results.html', result=result, search=search)
+
+            elif not result:
+
+                # Look for partial match in db
+                part = '%' + isbn + '%'
+
+                others = db.execute(
+                    "SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": part}).fetchall()
+
+                matches = db.execute(
+                    "SELECT COUNT(*) FROM books WHERE isbn LIKE :isbn", {"isbn": part}).fetchone()
+                matches = matches[0]
+
+                if not others:
+                    search = f'No matches for "{isbn}"'
+                    return render_template('results.html', result=result, others=others, search=search)
+                else:
+                    search = f'Exact results for "{isbn}" could not be found.'
+                    return render_template('results.html', result=result, others=others, search=search, matches=matches)
 
         elif type == 'title':
 
+            # define initial variables
             title = request.form.get('title')
 
-            # query API for title or partial
-            res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "titles": title})
-            res = res.json()
+            # query db
+            result = db.execute(
+                "SELECT * FROM books WHERE title = :title", {"title": title}).fetchall()
 
-            return render_template('results', res=res)
+            if result:
+
+                search = f'Exact match for "{title}"'
+                return render_template('results.html', result=result, search=search)
+
+            elif not result:
+
+                # Look for partial match in db
+                part = '%' + title + '%'
+
+                others = db.execute(
+                    "SELECT * FROM books WHERE title LIKE :title", {"title": part}).fetchall()
+
+                matches = db.execute(
+                    "SELECT COUNT(*) FROM books WHERE title LIKE :title", {"title": part}).fetchone()
+                matches = matches[0]
+
+                if not others:
+                    search = f'No matches for "{title}"'
+                    return render_template('results.html', result=result, others=others, search=search)
+                else:
+                    search = f'Exact results for "{title}" could not be found.'
+                    return render_template('results.html', result=result, others=others, search=search, matches=matches)
 
         elif type == 'author':
 
+            # define initial variables
             author = request.form.get('author')
 
-            # query API for author or partial
-            res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "authors": author})
-            res = res.json()
+            # query db
+            result = db.execute(
+                "SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
 
-            return render_template('results', res=res)
+            if result:
+
+                search = f'Exact match for "{author}"'
+                return render_template('results.html', result=result, search=search)
+
+            elif not result:
+
+                # Look for partial match in db
+                part = '%' + author + '%'
+
+                others = db.execute(
+                    "SELECT * FROM books WHERE author LIKE :author", {"author": part}).fetchall()
+
+                matches = db.execute(
+                    "SELECT COUNT(*) FROM books WHERE author LIKE :author", {"author": part}).fetchone()
+                matches = matches[0]
+
+                if not others:
+                    search = f'No matches for "{author}"'
+                    return render_template('results.html', result=result, others=others, search=search)
+                else:
+                    search = f'Exact results for "{author}" could not be found.'
+                    return render_template('results.html', result=result, others=others, search=search, matches=matches)
 
         else:
             return render_template('error', err='Something went wrong!')
 
     else:
-        return render_template('search.html')
+        return redirect(url_for('search', error='yes', err='Something went wrong!'))
+
+
+@app.route("/book/<string:isbn>", methods=["POST"])
+@login_required
+def book(isbn):
+
+    if request.method == 'POST':
+
+        # query db
+        book = db.execute(
+            "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+
+        # Search goodreads API
+        api = requests.get("https://www.goodreads.com/book/review_counts.json",
+                           params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
+
+        if api:
+            api = api.json()
+        else:
+            api = 'Unknown'
+
+        return render_template('book.html', book=book, api=api)

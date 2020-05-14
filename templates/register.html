@@ -9,8 +9,11 @@ Register
 <h1>Registration</h1>
 
 {% if error == 'yes' %}
-<div class="error">
-    <p>{{ err }}</p>
+<div class="alert alert-danger" role="alert">
+    <strong>{{ err }}</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 {% endif %}
 

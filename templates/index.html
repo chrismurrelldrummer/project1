@@ -6,11 +6,16 @@ Home
 
 {% block main %}
 
+{% if session.user_id %}
+<h3>You are currently logged in. Please remember to log out.</h3>
+{% endif %}
+
 <div class="jumbotron">
-    <h1 class="display-4">Welcome to BookLook!</h1>
-    <p class="lead">BookLook is a search and review site where you can look up a book, see ratings and leave a review yourself!</p>
-    <hr class="my-4">
-    <a class="btn btn-primary btn-lg" href="/register" role="button">Register Now!</a>
-  </div>
+  <h1 class="display-4">Welcome to BookLook!</h1>
+  <p class="lead">BookLook is a search and review site where you can look up a book, see ratings and leave a review
+    yourself!</p>
+  <hr class="my-4">
+  <a class="btn btn-primary btn-lg" href="/register" role="button">Register Now!</a>
+</div>
 
 {% endblock %}
