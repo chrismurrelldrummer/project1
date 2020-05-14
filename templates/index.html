@@ -7,7 +7,12 @@ Home
 {% block main %}
 
 {% if session.user_id %}
-<h3>You are currently logged in. Please remember to log out.</h3>
+<div class="alert alert-danger" role="alert">
+  <h3>You are currently logged in. Please remember to log out.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+  </button></h3>
+</div>
 {% endif %}
 
 <div class="jumbotron">
