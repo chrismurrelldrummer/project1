@@ -146,6 +146,10 @@ def results(type):
             # define initial variables
             isbn = request.form.get('isbn')
 
+            if not isbn.isnumeric():
+                err = 'Invalid ISBN: Must contain only numbers.'
+                return render_template('search.html', error='yes', err=err)
+
             # query db
             result = db.execute(
                 "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
@@ -162,7 +166,7 @@ def results(type):
                 part = '%' + isbn + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": part}).fetchall()
+                    "SELECT * FROM books WHERE isbn LIKE :isbn ORDER BY isbn", {"isbn": part}).fetchall()
 
                 matches = db.execute(
                     "SELECT COUNT(*) FROM books WHERE isbn LIKE :isbn", {"isbn": part}).fetchone()
@@ -195,7 +199,7 @@ def results(type):
                 part = '%' + title + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE title LIKE :title", {"title": part}).fetchall()
+                    "SELECT * FROM books WHERE title LIKE :title ORDER BY title", {"title": part}).fetchall()
 
                 matches = db.execute(
                     "SELECT COUNT(*) FROM books WHERE title LIKE :title", {"title": part}).fetchone()
@@ -228,7 +232,7 @@ def results(type):
                 part = '%' + author + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE author LIKE :author", {"author": part}).fetchall()
+                    "SELECT * FROM books WHERE author LIKE :author ORDER BY author", {"author": part}).fetchall()
 
                 matches = db.execute(
                     "SELECT COUNT(*) FROM books WHERE author LIKE :author", {"author": part}).fetchone()

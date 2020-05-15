@@ -17,9 +17,9 @@ Search Results
 </div>
 {% endif %}
 
-
 {% if result %}
 <!-- list view -->
+
 <div class="card">
     <div class="card-header">
         <h3>{{ search }}</h3>
@@ -27,12 +27,15 @@ Search Results
 
     <div class="card-body">
         {% for row in result %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ row['title'] }}</h5>
-                <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year: {{ row['year'] }}</p>
-            </div>
-        </div>
+        <form action="{{ url_for('book', isbn=row['isbn'] )}}" method="POST">
+            <button class="card btn btn-block btn-light" type="submit">
+                <div class="card-body">
+                    <h5 class="card-title">{{ row['title'] }}</h5>
+                    <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year:
+                        {{ row['year'] }}</p>
+                </div>
+            </button>
+        </form>
         <hr>
         {% endfor %}
     </div>
@@ -67,14 +70,16 @@ Search Results
         {% for row in others %}
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ row['title'] }}</h5>
-                        <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year:
-                            {{ row['year'] }}
-                        </p>
-                    </div>
-                </div>
+                <form action="{{ url_for('book', isbn=row['isbn'] )}}" method="POST">
+                    <button class="card btn btn-block btn-light" type="submit">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ row['title'] }}</h5>
+                            <p class="card-text">ISBN: {{ row['isbn'] }}, Author: {{ row['author'] }}, Year:
+                                {{ row['year'] }}
+                            </p>
+                        </div>
+                    </button>
+                </form>
                 <hr>
             </div>
         </div>
@@ -85,6 +90,14 @@ Search Results
     <div class="card-footer text-muted">
         Page 1 of 1
     </div>
+</div>
+
+{% else %}
+<div class="alert alert-warning" role="alert">
+    <strong>{{ search }}</strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 {% endif %}
 
