@@ -20,14 +20,14 @@ Search Results
 {% if result %}
 <!-- list view -->
 
-<div class="card">
+<div class="card cmx">
     <div class="card-header">
         <h3>{{ search }}</h3>
     </div>
 
     <div class="card-body">
         {% for row in result %}
-        <form action="{{ url_for('book', isbn=row['isbn'] )}}" method="POST">
+        <form action="{{ url_for('book', isbn=row['isbn'] )}}">
             <button class="card btn btn-block btn-light" type="submit">
                 <div class="card-body">
                     <h5 class="card-title">{{ row['title'] }}</h5>
@@ -46,7 +46,7 @@ Search Results
 
 {% elif others %}
 
-<div class="card">
+<div class="card cmx">
 
     <div class="card-header">
         <div class="row">
@@ -63,14 +63,14 @@ Search Results
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <h4>Did you mean?</h4>
+                <h4>Did you mean?</h4><br>
             </div>
         </div>
 
         {% for row in others %}
         <div class="row">
             <div class="col-md-12">
-                <form action="{{ url_for('book', isbn=row['isbn'] )}}" method="POST">
+                <form action="{{ url_for('book', isbn=row['isbn'] )}}">
                     <button class="card btn btn-block btn-light" type="submit">
                         <div class="card-body">
                             <h5 class="card-title">{{ row['title'] }}</h5>
@@ -103,41 +103,43 @@ Search Results
 
 
 <div>
-    <form action="{{url_for('results', type='isbn')}}" method="POST">
-        <div class="form-group">
-            <label for="isbn">Search by ISBN:</label>
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" placeholder="ISBN" name="isbn">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <form action="{{url_for('results', type='title')}}" method="POST">
-        <div class="form-group">
-            <label for="isbn">Search by Title:</label>
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" placeholder="Title" name="title">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <form action="{{url_for('results', type='author')}}" method="POST">
-        <div class="form-group">
-            <label for="isbn">Search by Author:</label>
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" placeholder="Author" name="author">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </div>
-            </div>
-        </div>
-    </form>
+    <h5 class="search">Make Another Search:</h5>
 </div>
+<form action="{{url_for('results', type='isbn')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by ISBN:</label>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" placeholder="ISBN" name="isbn">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="{{url_for('results', type='title')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by Title:</label>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" placeholder="Title" name="title">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="{{url_for('results', type='author')}}" method="POST">
+    <div class="form-group">
+        <label for="isbn">Search by Author:</label>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" placeholder="Author" name="author">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
 
 {% endblock %}

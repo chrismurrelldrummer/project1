@@ -29,6 +29,9 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
 
+    # Forget any user_id and username
+    session.clear()
+
     return render_template('index.html')
 
 
@@ -186,7 +189,7 @@ def results(type):
 
             # query db
             result = db.execute(
-                "SELECT * FROM books WHERE title = :title", {"title": title}).fetchall()
+                "SELECT * FROM books WHERE UPPER(title) = :title", {"title": title.upper()}).fetchall()
 
             if result:
 
@@ -199,10 +202,10 @@ def results(type):
                 part = '%' + title + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE title LIKE :title ORDER BY title", {"title": part}).fetchall()
+                    "SELECT * FROM books WHERE UPPER(title) LIKE :title ORDER BY title", {"title": part.upper()}).fetchall()
 
                 matches = db.execute(
-                    "SELECT COUNT(*) FROM books WHERE title LIKE :title", {"title": part}).fetchone()
+                    "SELECT COUNT(*) FROM books WHERE UPPER(title) LIKE :title", {"title": part.upper()}).fetchone()
                 matches = matches[0]
 
                 if not others:
@@ -219,7 +222,7 @@ def results(type):
 
             # query db
             result = db.execute(
-                "SELECT * FROM books WHERE author = :author", {"author": author}).fetchall()
+                "SELECT * FROM books WHERE UPPER(author) = :author", {"author": author.upper()}).fetchall()
 
             if result:
 
@@ -232,10 +235,10 @@ def results(type):
                 part = '%' + author + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE author LIKE :author ORDER BY author", {"author": part}).fetchall()
+                    "SELECT * FROM books WHERE UPPER(author) LIKE :author ORDER BY author", {"author": part.upper()}).fetchall()
 
                 matches = db.execute(
-                    "SELECT COUNT(*) FROM books WHERE author LIKE :author", {"author": part}).fetchone()
+                    "SELECT COUNT(*) FROM books WHERE UPPER(author) LIKE :author", {"author": part.upper()}).fetchone()
                 matches = matches[0]
 
                 if not others:
@@ -252,7 +255,7 @@ def results(type):
 
             # query db
             result = db.execute(
-                "SELECT * FROM books WHERE isbn = :isbn OR title = :title OR author = :author", {"isbn": search, "title": search, "author": search}).fetchall()
+                "SELECT * FROM books WHERE isbn = :isbn OR UPPER(title) = :title OR UPPER(author) = :author", {"isbn": search, "title": search.upper(), "author": search.upper()}).fetchall()
 
             if result:
 
@@ -265,10 +268,10 @@ def results(type):
                 part = '%' + search + '%'
 
                 others = db.execute(
-                    "SELECT * FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author", {"isbn": part, "title": part, "author": part}).fetchall()
+                    "SELECT * FROM books WHERE isbn LIKE :isbn OR UPPER(title) LIKE :title OR UPPER(author) LIKE :author", {"isbn": part, "title": part.upper(), "author": part.upper()}).fetchall()
 
                 matches = db.execute(
-                    "SELECT COUNT(*) FROM books WHERE isbn LIKE :isbn OR title LIKE :title OR author LIKE :author", {"isbn": part, "title": part, "author": part}).fetchone()
+                    "SELECT COUNT(*) FROM books WHERE isbn LIKE :isbn OR UPPER(title) LIKE :title OR UPPER(author) LIKE :author", {"isbn": part, "title": part.upper(), "author": part.upper()}).fetchone()
                 matches = matches[0]
 
                 if not others:
@@ -285,15 +288,23 @@ def results(type):
         return redirect(url_for('search', error='yes', err='Something went wrong!'))
 
 
-@app.route("/book/<string:isbn>", methods=["POST"])
+@app.route("/book/<string:isbn>", methods=["GET", "POST"])
 @login_required
 def book(isbn):
 
-    if request.method == 'POST':
+    if request.method == 'GET':
 
-        # query db
+        # query db for book details
         book = db.execute(
-            "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+            "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+
+        # query db for rating details
+        counts = db.execute(
+            "SELECT COUNT(comment), AVG(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
+
+        # query db for review details
+        reviews = db.execute(
+            "SELECT username, comment, rating FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchall()
 
         # Search goodreads API
         api = requests.get("https://www.goodreads.com/book/review_counts.json",
@@ -304,4 +315,16 @@ def book(isbn):
         else:
             api = 'Unknown'
 
-        return render_template('book.html', book=book, api=api)
+        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts)
+
+    else:
+        # Search goodreads API
+        api = requests.get("https://www.goodreads.com/book/review_counts.json",
+                           params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
+
+        if api:
+            api = api.json()
+        else:
+            api = 'Unknown'
+
+        return render_template('book.html', api=api)

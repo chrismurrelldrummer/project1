@@ -6,8 +6,6 @@ Book Details
 
 {% block main %}
 
-<h1>Book Details</h1>
-
 {% if error == 'yes' %}
 <div class="alert alert-danger" role="alert">
     <strong>{{ err }}</strong>
@@ -17,17 +15,86 @@ Book Details
 </div>
 {% endif %}
 
-<h3>{{ book['title'] }}</h3>
+<h1>{{ book['title'] }}</h1>
+
+<ul>
+    <li>ISBN: {{ book['isbn'] }}</li>
+    <li>Author: {{ book['author'] }}</li>
+    <li>Year of Publication: {{ book['year'] }}</li>
+    <li>Average BookLook Rating: {{ counts['AVG(rating)'] }} / 5.0</li>
+</ul>
 
 {% if api %}
-<p>{{ api }}</p>
+<ul>
+    <li>Average Rating on goodreads: {{ api['books'][0]['average_rating'] }} / 5.0</li>
+    <li>from {{ api['books'][0]['work_ratings_count'] }} ratings</li>
+</ul>
 <hr>
 {% endif %}
+
+<div class="card cmx">
+
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Reviews:</h4>
+            </div>
+            <div class="col-md-4">
+                <h5>
+                    {% if reviews %}
+                    Number of Text Reviews: {{ counts['COUNT(comment)'] }}
+                    {% else %}
+                    Number of Text Reviews: 0
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="col-md-4">
+                <h5>
+                    {% if reviews %}
+                    Average BookLook Rating: {{ counts['AVG(rating)'] }} / 5.0
+                    {% else %}
+                    There are no ratings for this book yet.
+                    {% endif %}
+                </h5>
+            </div>
+        </div>
+    </div>
+
+    {% if reviews %}
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Reviews</h4><br>
+            </div>
+        </div>
+
+        {% for row in reviews %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-body">
+                    <h5 class="card-title">{{ row['username'] }}</h5>
+                    <p class="card-text">{{ row['comment'] }}</p>
+                    <p class="card-text"> Rating: {{ row['rating'] }} / 5 </p>
+                </div>
+                <hr>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="card-footer text-muted">
+        Page 1 of 1
+    </div>
+
+    {% endif %}
+
+</div>
 
 
 <form action="{{url_for('search')}}" method="GET">
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">Search Again</button>
+        <button class="btn btn-primary" type="submit">Back to Search</button>
     </div>
 </form>
 
