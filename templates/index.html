@@ -6,15 +6,6 @@ Home
 
 {% block main %}
 
-{% if session.user_id %}
-<div class="alert alert-danger" role="alert">
-  <h3>You are currently logged in. Please remember to log out.
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-  </button></h3>
-</div>
-{% endif %}
-
 <div class="jumbotron">
   <h1 class="display-4">Welcome to BookLook!</h1>
   <p class="lead">BookLook is a search and review site where you can look up a book, see ratings and leave a review

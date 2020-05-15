@@ -18,6 +18,9 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
     </script>
 
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <!-- local css/scss -->
     <link href="/static/styles.css" rel="stylesheet">
     <link href="/static/altstyles.css" rel="stylesheet">
@@ -47,7 +50,8 @@
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" action="{{url_for('results', type='quicksearch')}}" method="POST">
-                <input class="form-control mr-sm-2" name="quicksearch" type="search" placeholder="Quick Search" aria-label="Search">
+                <input class="form-control mr-sm-2" name="quicksearch" type="search" placeholder="Quick Search"
+                    aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>

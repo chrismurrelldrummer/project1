@@ -25,6 +25,15 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+# define class for percentages in user ratings
+class Perc:
+    def __init__(self,five,four,three,two,one):
+        self.five = five
+        self.four = four
+        self.three = three
+        self.two = two
+        self.one = one
+
 
 @app.route("/")
 def index():
@@ -300,7 +309,33 @@ def book(isbn):
 
         # query db for rating details
         counts = db.execute(
-            "SELECT COUNT(comment), AVG(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
+            "SELECT COUNT(comment), COUNT(rating), ROUND(AVG(rating),1), ROUND(AVG(rating)) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
+
+        rounded = int(counts[3])
+
+        five = db.execute(
+            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '5'", {"book": book['id']}).fetchone()
+
+        four = db.execute(
+            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '4'", {"book": book['id']}).fetchone()
+
+        three = db.execute(
+            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '3'", {"book": book['id']}).fetchone()
+
+        two = db.execute(
+            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '2'", {"book": book['id']}).fetchone()
+
+        one = db.execute(
+            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '1'", {"book": book['id']}).fetchone()
+
+        # get percentage share of ratings
+        percfive = (five[0] / counts[1])*100
+        percfour = (four[0] / counts[1])*100
+        percthree = (three[0] / counts[1])*100
+        perctwo = (two[0] / counts[1])*100
+        percone = (one[0] / counts[1])*100
+
+        perc = Perc(percfive, percfour, percthree, perctwo, percone)
 
         # query db for review details
         reviews = db.execute(
@@ -315,7 +350,7 @@ def book(isbn):
         else:
             api = 'Unknown'
 
-        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts)
+        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts, five=five, four=four, three=three, two=two, one=one, rounded=rounded, perc=perc)
 
     else:
         # Search goodreads API
@@ -328,3 +363,28 @@ def book(isbn):
             api = 'Unknown'
 
         return render_template('book.html', api=api)
+
+
+@app.route("/review/<string:ident>/<string:isbn>/add", methods=["POST"])
+def addreview(ident, isbn):
+    """Add review to db"""
+
+    # get user submitted info
+    userID = session['user_id']
+    comment = request.form.get("addcomment")
+    rating = request.form.get("rating")
+
+    # Query database for existing user review
+    exist = db.execute("SELECT * FROM reviews WHERE userID = :user AND bookID = :book",
+                       {"user": userID, "book": ident}).fetchone()
+
+    if exist:
+        err = "Sorry! You have already reviewed this book. We only allow one review per book per user."
+        return render_template('book.html', error='yes', err=err)
+
+    # insert into db
+    db.execute("INSERT INTO reviews (userID, bookID, comment, rating) VALUES (:uid, :book, :com, :rat)",
+               {"uid": userID, "book": ident, "com": comment, "rat": rating})
+    db.commit()
+
+    return redirect(url_for('book', isbn=isbn))
