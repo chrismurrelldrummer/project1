@@ -35,162 +35,161 @@ Book Details
 <div class="card cmx">
 
     <div class="card-header">
-        <div class="row">
-            <div class="card-body">
-                <!-- first if for statement when no reviews -->
-                {% if reviews %}
-                <!-- w3schools user rating stars and progress bars for each rating -->
-                <!-- second if for ratings analytics -->
-                {% if reviews %}
-                <h3>User Ratings</h3>
+        <div class="card-body">
+            <!-- first if for statement when no reviews -->
+            {% if reviews %}
+            <!-- w3schools user rating stars and progress bars for each rating -->
+            <!-- second if for ratings analytics -->
+            {% if reviews %}
+            <h3>User Ratings</h3>
 
-                <h5>
-                    Number of Text Reviews: {{ counts[1] }}
-                </h5>
+            <h5>
+                Number of Text Reviews: {{ counts[1] }}
+            </h5>
 
-                <div>
-                    {% for i in range(rounded) %}
-                    <span class="fa fa-star checked"></span>
-                    {% endfor %}
-                    {% for i in range(5 - rounded) %}
-                    <span class="fa fa-star"></span>
-                    {% endfor %}
-                    Average BookLook Rating: {{ counts[2] }} / 5.0 based on {{ counts[1] }}
-                    reviews.
-                </div>
-
-                <hr style="border:3px solid #f1f1f1">
-
-                <div class="row">
-                    <div class="side">
-                        <div>5 star</div>
-                    </div>
-                    <div class="middle">
-                        <div class="bar-container">
-                            <div class="bar-5" style="width: {{ perc.five }}%;"></div>
-                        </div>
-                    </div>
-                    <div class="side right">
-                        <div>{{ five[0] }}</div>
-                    </div>
-                    <div class="side">
-                        <div>4 star</div>
-                    </div>
-                    <div class="middle">
-                        <div class="bar-container">
-                            <div class="bar-4" style="width: {{ perc.four }}%;"></div>
-                        </div>
-                    </div>
-                    <div class="side right">
-                        <div>{{ four[0] }}</div>
-                    </div>
-                    <div class="side">
-                        <div>3 star</div>
-                    </div>
-                    <div class="middle">
-                        <div class="bar-container">
-                            <div class="bar-3" style="width: {{ perc.three }}%;"></div>
-                        </div>
-                    </div>
-                    <div class="side right">
-                        <div>{{ three[0] }}</div>
-                    </div>
-                    <div class="side">
-                        <div>2 star</div>
-                    </div>
-                    <div class="middle">
-                        <div class="bar-container">
-                            <div class="bar-2" style="width: {{ perc.two }}%;"></div>
-                        </div>
-                    </div>
-                    <div class="side right">
-                        <div>{{ two[0] }}</div>
-                    </div>
-                    <div class="side">
-                        <div>1 star</div>
-                    </div>
-                    <div class="middle">
-                        <div class="bar-container">
-                            <div class="bar-1" style="width: {{ perc.one }}%;"></div>
-                        </div>
-                    </div>
-                    <div class="side right">
-                        <div>{{ one[0] }}</div>
-                    </div>
-                </div>
-                <!-- end of user rating -->
-                {% else %}
-                <h5> There are no ratings for this book yet. </h5>
-                {% endif %}
+            <div>
+                {% for i in range(rounded) %}
+                <span class="fa fa-star checked"></span>
+                {% endfor %}
+                {% for i in range(5 - rounded) %}
+                <span class="fa fa-star"></span>
+                {% endfor %}
+                Average BookLook Rating: {{ counts[2] }} / 5.0 based on {{ counts[1] }}
+                reviews.
             </div>
+
+            <hr style="border:3px solid #f1f1f1">
+
+            <div class="row">
+                <div class="side">
+                    <div>5 star</div>
+                </div>
+                <div class="middle">
+                    <div class="bar-container">
+                        <div class="bar-5" style="width: {{ perc.five }}%;"></div>
+                    </div>
+                </div>
+                <div class="side right">
+                    <div>{{ five[0] }}</div>
+                </div>
+                <div class="side">
+                    <div>4 star</div>
+                </div>
+                <div class="middle">
+                    <div class="bar-container">
+                        <div class="bar-4" style="width: {{ perc.four }}%;"></div>
+                    </div>
+                </div>
+                <div class="side right">
+                    <div>{{ four[0] }}</div>
+                </div>
+                <div class="side">
+                    <div>3 star</div>
+                </div>
+                <div class="middle">
+                    <div class="bar-container">
+                        <div class="bar-3" style="width: {{ perc.three }}%;"></div>
+                    </div>
+                </div>
+                <div class="side right">
+                    <div>{{ three[0] }}</div>
+                </div>
+                <div class="side">
+                    <div>2 star</div>
+                </div>
+                <div class="middle">
+                    <div class="bar-container">
+                        <div class="bar-2" style="width: {{ perc.two }}%;"></div>
+                    </div>
+                </div>
+                <div class="side right">
+                    <div>{{ two[0] }}</div>
+                </div>
+                <div class="side">
+                    <div>1 star</div>
+                </div>
+                <div class="middle">
+                    <div class="bar-container">
+                        <div class="bar-1" style="width: {{ perc.one }}%;"></div>
+                    </div>
+                </div>
+                <div class="side right">
+                    <div>{{ one[0] }}</div>
+                </div>
+            </div>
+            <!-- end of user rating -->
+            {% else %}
+            <h5> There are no ratings for this book yet. </h5>
+            {% endif %}
         </div>
     </div>
 
 
     {% for row in reviews %}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card-body">
-                <h5 class="card-title">
-                    {% for i in range(row['rating']) %}
-                    <span class="fa fa-star checked"></span>
-                    {% endfor %}
-                    {% for i in range(5 - row['rating']) %}
-                    <span class="fa fa-star"></span>
-                    {% endfor %}
-                    {{ row['username'] }}
-                </h5>
-                <p class="card-text"><q>{{ row['comment'] }}</q></p>
-                <p class="card-text"> Rating: {{ row['rating'] }} / 5 </p>
-            </div>
-            <hr>
+
+    <div class="col-md-12">
+        <div class="card-body">
+            <h5 class="card-title">
+                {% for i in range(row['rating']) %}
+                <span class="fa fa-star checked"></span>
+                {% endfor %}
+                {% for i in range(5 - row['rating']) %}
+                <span class="fa fa-star"></span>
+                {% endfor %}
+                {{ row['username'] }}
+            </h5>
+            <p class="card-text"><q>{{ row['comment'] }}</q></p>
+            <p class="card-text"> Rating: {{ row['rating'] }} / 5 </p>
         </div>
+        <hr>
     </div>
+
     {% endfor %}
 
     {% endif %}
 
-    <div class="row">
-        <div class="col-md-12">
+    <div>
+        <form action="{{ url_for('addreview', ident=book['id'], isbn=book['isbn']) }}" method="POST" class="card-text">
             <div class="card-body">
                 <h5 class="card-title">Leave a review:</h5>
-                <form action="{{ url_for('addreview', ident=book['id'], isbn=book['isbn']) }}" method="POST"
-                    class="card-text">
-                    <div class="form-group">
-                        <div class="col-md-9 mr-auto">
-                            <textarea type="textarea" class="form-control" name="addcomment" id="addcomment"></textarea>
-                        </div>
-                        <div class="col-md-3 ml-auto">
-                            <!-- star rating from http://code.iamkate.com/html-and-css/star-rating-widget -->
-                            <span class="starRating">
-                                <input id="rating5" type="radio" name="rating" value="5">
-                                <label for="rating5">5</label>
-                                <input id="rating4" type="radio" name="rating" value="4">
-                                <label for="rating4">4</label>
-                                <input id="rating3" type="radio" name="rating" value="3" checked>
-                                <label for="rating3">3</label>
-                                <input id="rating2" type="radio" name="rating" value="2">
-                                <label for="rating2">2</label>
-                                <input id="rating1" type="radio" name="rating" value="1">
-                                <label for="rating1">1</label>
-                            </span>
-                            <!-- end of star rating -->
-                        </div>
+
+                <div class="form-group">
+                    <div>
+                        <!-- star rating from http://code.iamkate.com/html-and-css/star-rating-widget -->
+                        <span class="starRating">
+                            <input id="rating5" type="radio" name="rating" value="5">
+                            <label for="rating5">5</label>
+                            <input id="rating4" type="radio" name="rating" value="4">
+                            <label for="rating4">4</label>
+                            <input id="rating3" type="radio" name="rating" value="3" checked>
+                            <label for="rating3">3</label>
+                            <input id="rating2" type="radio" name="rating" value="2">
+                            <label for="rating2">2</label>
+                            <input id="rating1" type="radio" name="rating" value="1">
+                            <label for="rating1">1</label>
+                        </span>
+                        <!-- end of star rating -->
+                    </div>
+                    <div class="input-group mb-3">
+                        <textarea type="textarea" class="form-control" name="addcomment" id="addcomment"></textarea>
                     </div>
 
-                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
 
-                </form>
+                <div class="form-group">
+
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
             </div>
-            <hr>
-        </div>
+
+        </form>
     </div>
 
-</div>
-
-<div class="card-footer text-muted">
-    Page 1 of 1
-</div>
+    <div class="card-footer text-muted">
+        Page 1 of 1
+    </div>
 
 </div>
 

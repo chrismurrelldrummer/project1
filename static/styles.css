@@ -8,7 +8,19 @@ body {
     margin-top: 3%;
 }
 
+.col-md-9 {
+    padding-left: 0;
+}
+
+.col-md-3 {
+    padding-left: 0;
+}
+
 /* forms */
+
+#addcomment {
+    margin-right: 1%;
+}
 
 
 /* bootstrap and w3schools features */
@@ -95,7 +107,7 @@ body {
 }
 
 /* star rating from http://code.iamkate.com/html-and-css/star-rating-widget */
-span .starRating:not(old) {
+.starRating:not(old) {
     display: inline-block;
     width: 7.5em;
     height: 1.5em;
@@ -103,25 +115,25 @@ span .starRating:not(old) {
     vertical-align: bottom;
 }
 
-span .starRating:not(old)>input {
+.starRating:not(old)>input {
     margin-right: -100%;
     opacity: 0;
 }
 
-span .starRating:not(old)>label {
+.starRating:not(old)>label {
     display: block;
     float: right;
     position: relative;
-    background: url('/images/star-off.svg');
+    background: url('star-off.svg');
     background-size: contain;
 }
 
-span .starRating:not(old)>label:before {
+.starRating:not(old)>label:before {
     content: '';
     display: block;
     width: 1.5em;
     height: 1.5em;
-    background: url('/images/star-on.svg');
+    background: url('star-on.svg');
     background-size: contain;
     opacity: 0;
     transition: opacity 0.2s linear;
