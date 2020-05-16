@@ -21,12 +21,11 @@ Book Details
     <li>ISBN: {{ book['isbn'] }}</li>
     <li>Author: {{ book['author'] }}</li>
     <li>Year of Publication: {{ book['year'] }}</li>
-    <li>Average BookLook Rating: {{ counts['AVG(rating)'] }} / 5.0</li>
 </ul>
 
 {% if api %}
 <ul>
-    <li>Average Rating on goodreads: {{ api['books'][0]['average_rating'] }} / 5.0</li>
+    <li>Average Rating on goodreads: {{ '%0.1f'| format(api['books'][0]['average_rating'] | float) }} / 5.0</li>
     <li>from {{ api['books'][0]['work_ratings_count'] }} ratings</li>
 </ul>
 <hr>
@@ -48,13 +47,13 @@ Book Details
             </h5>
 
             <div>
-                {% for i in range(rounded) %}
+                {% for i in range(counts[2] | int) %}
                 <span class="fa fa-star checked"></span>
                 {% endfor %}
-                {% for i in range(5 - rounded) %}
+                {% for i in range(5 - (counts[2] | int)) %}
                 <span class="fa fa-star"></span>
                 {% endfor %}
-                Average BookLook Rating: {{ counts[2] }} / 5.0 based on {{ counts[1] }}
+                Average BookLook Rating: {{ '%0.1f'| format(counts[2] | float) }} / 5.0 based on {{ counts[1] }}
                 reviews.
             </div>
 
@@ -171,7 +170,7 @@ Book Details
                         <!-- end of star rating -->
                     </div>
                     <div class="input-group mb-3">
-                        <textarea type="textarea" class="form-control" name="addcomment" id="addcomment"></textarea>
+                        <textarea type="textarea" class="form-control" rows="5" name="addcomment" id="addcomment"></textarea>
                     </div>
 
                 </div>

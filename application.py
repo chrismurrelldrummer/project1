@@ -26,8 +26,10 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 # define class for percentages in user ratings
+
+
 class Perc:
-    def __init__(self,five,four,three,two,one):
+    def __init__(self, five, four, three, two, one):
         self.five = five
         self.four = four
         self.three = three
@@ -109,8 +111,12 @@ def register():
         users = db.execute("SELECT * FROM users WHERE username = :username",
                            {"username": username}).fetchone()
 
+        # password and username complexity conditions
         if users:
             err = "Sorry! There is an account already registered with this username. Please select another or log in."
+            return render_template("register.html", error='yes', err=err)
+        elif password == username:
+            err = "Sorry! Your password must be different to your username."
             return render_template("register.html", error='yes', err=err)
         elif not password == confirm:
             err = "Sorry! These passwords don't match."
@@ -123,6 +129,15 @@ def register():
             return render_template("register.html", error='yes', err=err)
         elif password.isnumeric():
             err = "Sorry! Passwords must contain both letters and numbers."
+            return render_template("register.html", error='yes', err=err)
+        elif len(username) < 8:
+            err = "Sorry! Usernames must be at least 8 characters long."
+            return render_template("register.html", error='yes', err=err)
+        elif username.isalpha():
+            err = "Sorry! Usernames must contain both letters and numbers."
+            return render_template("register.html", error='yes', err=err)
+        elif username.isnumeric():
+            err = "Sorry! Usernames must contain both letters and numbers."
             return render_template("register.html", error='yes', err=err)
 
         # hash password
@@ -309,9 +324,7 @@ def book(isbn):
 
         # query db for rating details
         counts = db.execute(
-            "SELECT COUNT(comment), COUNT(rating), ROUND(AVG(rating),1), ROUND(AVG(rating)) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
-
-        rounded = int(counts[3])
+            "SELECT COUNT(comment), COUNT(rating), AVG(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
 
         five = db.execute(
             "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '5'", {"book": book['id']}).fetchone()
@@ -350,7 +363,7 @@ def book(isbn):
         else:
             api = 'Unknown'
 
-        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts, five=five, four=four, three=three, two=two, one=one, rounded=rounded, perc=perc)
+        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts, five=five, four=four, three=three, two=two, one=one, perc=perc)
 
     else:
         # Search goodreads API
@@ -379,8 +392,8 @@ def addreview(ident, isbn):
                        {"user": userID, "book": ident}).fetchone()
 
     if exist:
-        err = "Sorry! You have already reviewed this book. We only allow one review per book per user."
-        return render_template('book.html', error='yes', err=err)
+        err = f'Sorry! Could not post this review for book with isbn: {isbn}. You have already reviewed this book. We only allow one review per book per user.'
+        return render_template('error.html', isbn=isbn, error='yes', err=err)
 
     # insert into db
     db.execute("INSERT INTO reviews (userID, bookID, comment, rating) VALUES (:uid, :book, :com, :rat)",
