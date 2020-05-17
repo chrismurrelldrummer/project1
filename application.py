@@ -159,12 +159,14 @@ def register():
 @app.route("/search", methods=["GET"])
 @login_required
 def search():
+    """display search page"""
     return render_template('search.html')
 
 
 @app.route("/search/<string:type>", methods=["POST"])
 @login_required
 def results(type):
+    """display search results """
 
     if request.method == 'POST':
 
@@ -315,6 +317,7 @@ def results(type):
 @app.route("/book/<string:isbn>", methods=["GET", "POST"])
 @login_required
 def book(isbn):
+    """display book details and reviews"""
 
     if request.method == 'GET':
 
@@ -324,46 +327,62 @@ def book(isbn):
 
         # query db for rating details
         counts = db.execute(
-            "SELECT COUNT(comment), COUNT(rating), AVG(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
+            "SELECT COUNT(rating), AVG(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
 
-        five = db.execute(
-            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '5'", {"book": book['id']}).fetchone()
+        coms = db.execute(
+            "SELECT COUNT(comment) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND reviews.comment != '' ", {"book": book['id']}).fetchone()
 
-        four = db.execute(
-            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '4'", {"book": book['id']}).fetchone()
+        if not counts[0] == 0:
 
-        three = db.execute(
-            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '3'", {"book": book['id']}).fetchone()
+            five = db.execute(
+                "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '5'", {"book": book['id']}).fetchone()
 
-        two = db.execute(
-            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '2'", {"book": book['id']}).fetchone()
+            four = db.execute(
+                "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '4'", {"book": book['id']}).fetchone()
 
-        one = db.execute(
-            "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '1'", {"book": book['id']}).fetchone()
+            three = db.execute(
+                "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '3'", {"book": book['id']}).fetchone()
 
-        # get percentage share of ratings
-        percfive = (five[0] / counts[1])*100
-        percfour = (four[0] / counts[1])*100
-        percthree = (three[0] / counts[1])*100
-        perctwo = (two[0] / counts[1])*100
-        percone = (one[0] / counts[1])*100
+            two = db.execute(
+                "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '2'", {"book": book['id']}).fetchone()
 
-        perc = Perc(percfive, percfour, percthree, perctwo, percone)
+            one = db.execute(
+                "SELECT COUNT(rating) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book AND rating = '1'", {"book": book['id']}).fetchone()
 
-        # query db for review details
-        reviews = db.execute(
-            "SELECT username, comment, rating FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchall()
+            # get percentage share of ratings
+            percfive = (five[0] / counts[0])*100
+            percfour = (four[0] / counts[0])*100
+            percthree = (three[0] / counts[0])*100
+            perctwo = (two[0] / counts[0])*100
+            percone = (one[0] / counts[0])*100
 
-        # Search goodreads API
-        api = requests.get("https://www.goodreads.com/book/review_counts.json",
-                           params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
+            perc = Perc(percfive, percfour, percthree, perctwo, percone)
 
-        if api:
-            api = api.json()
+            # query db for review details
+            reviews = db.execute(
+                "SELECT username, comment, rating FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchall()
+
+            # Search goodreads API
+            api = requests.get("https://www.goodreads.com/book/review_counts.json",
+                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
+
+            if api:
+                api = api.json()
+            else:
+                api = 'Unknown'
+
+            return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts, five=five, four=four, three=three, two=two, one=one, perc=perc, coms=coms[0])
         else:
-            api = 'Unknown'
+            # Search goodreads API
+            api = requests.get("https://www.goodreads.com/book/review_counts.json",
+                               params={"key": "q6gj5umJdwuDCz5OX61pwg", "isbns": isbn})
 
-        return render_template('book.html', book=book, api=api, reviews=reviews, counts=counts, five=five, four=four, three=three, two=two, one=one, perc=perc)
+            if api:
+                api = api.json()
+            else:
+                api = 'Unknown'
+
+            return render_template('book.html', book=book, api=api)
 
     else:
         # Search goodreads API
@@ -401,3 +420,33 @@ def addreview(ident, isbn):
     db.commit()
 
     return redirect(url_for('book', isbn=isbn))
+
+
+# Access via API route
+@app.route("/api/<string:isbn>", methods=["GET"])
+def api(isbn):
+    """call api response"""
+
+    if request.method == 'GET':
+
+        # query db for book details
+        book = db.execute(
+            "SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+        
+        if not book:
+            return jsonify('Book not found.'), 404
+
+        counts = db.execute(
+            "SELECT COUNT(rating), ROUND(AVG(rating),1) FROM ((reviews JOIN books on reviews.bookID = books.id) JOIN users ON reviews.userID = users.id) WHERE books.id = :book", {"book": book['id']}).fetchone()
+
+        # define response details
+        data = jsonify({
+            "title": book[2],
+            "author": book[3],
+            "year": book[4],
+            "isbn": book[1],
+            "review_count": counts[0],
+            "average_score": float(counts[1])
+        })
+
+        return data, 200

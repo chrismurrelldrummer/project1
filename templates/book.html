@@ -15,21 +15,41 @@ Book Details
 </div>
 {% endif %}
 
-<h1>{{ book['title'] }}</h1>
+<div class="jumbotron bg-secondary text-white pb-2 pt-4">
+    <h1 class="display-4">{{ book['title'] }}</h1>
 
-<ul>
-    <li>ISBN: {{ book['isbn'] }}</li>
-    <li>Author: {{ book['author'] }}</li>
-    <li>Year of Publication: {{ book['year'] }}</li>
-</ul>
+    <hr class="my-4">
+    <p class="lead">ISBN: {{ book['isbn'] }}</p>
+    <hr class="my-4">
+    <p class="lead">Author: {{ book['author'] }}</p>
+    <hr class="my-4">
+    <p class="lead">Year of Publication: {{ book['year'] }}</p>
+    <hr class="my-4">
 
-{% if api %}
-<ul>
-    <li>Average Rating on goodreads: {{ '%0.1f'| format(api['books'][0]['average_rating'] | float) }} / 5.0</li>
-    <li>from {{ api['books'][0]['work_ratings_count'] }} ratings</li>
-</ul>
-<hr>
-{% endif %}
+    {% if reviews %}
+    <p>
+        Average BookLook Rating: {{ '%0.1f'| format(counts[1] | float) }} / 5.0
+        <i> (based on {{ counts[0] }} reviews)</i>
+    </p>
+    {% else %}
+    <p>
+        There are currently no reviews for this book on this site.
+    </p>
+    {% endif %}
+
+    {% if not api == 'Unknown' %}
+    <p>
+        Average Rating on goodreads: {{ '%0.1f'| format(api['books'][0]['average_rating'] | float) }} / 5.0
+        <i> (from {{ api['books'][0]['work_ratings_count'] }} ratings)</i>
+    </p>
+    {% else %}
+    <p>
+        Average Rating on goodreads: <i>Unknown</i>
+    </p>
+    {% endif %}
+
+</div>
+
 
 <div class="card cmx">
 
@@ -43,17 +63,17 @@ Book Details
             <h3>User Ratings</h3>
 
             <h5>
-                Number of Text Reviews: {{ counts[1] }}
+                Number of Text Reviews: {{ coms }}
             </h5>
 
             <div>
-                {% for i in range(counts[2] | int) %}
+                {% for i in range(counts[1] | int) %}
                 <span class="fa fa-star checked"></span>
                 {% endfor %}
-                {% for i in range(5 - (counts[2] | int)) %}
+                {% for i in range(5 - (counts[1] | int)) %}
                 <span class="fa fa-star"></span>
                 {% endfor %}
-                Average BookLook Rating: {{ '%0.1f'| format(counts[2] | float) }} / 5.0 based on {{ counts[1] }}
+                Average BookLook Rating: {{ '%0.1f'| format(counts[1] | float) }} / 5.0 based on {{ counts[0] }}
                 reviews.
             </div>
 
@@ -126,6 +146,7 @@ Book Details
 
     {% for row in reviews %}
 
+    {% if row['comment'] %}
     <div class="col-md-12">
         <div class="card-body">
             <h5 class="card-title">
@@ -142,6 +163,7 @@ Book Details
         </div>
         <hr>
     </div>
+    {% endif %}
 
     {% endfor %}
 
@@ -185,9 +207,11 @@ Book Details
         </form>
     </div>
 
+    {% if reviews %}
     <div class="card-footer text-muted">
         Page 1 of 1
     </div>
+    {% endif %}
 
 </div>
 

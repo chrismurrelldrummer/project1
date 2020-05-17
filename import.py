@@ -13,11 +13,9 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 # set up database tables
-db.execute(CREATE TABLE books(id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INTEGER NOT NULL))
-
-db.execute(CREATE TABLE users(id SERIAL PRIMARY KEY, firstname VARCHAR NOT NULL, surname VARCHAR NOT NULL, username VARCHAR UNIQUE NOT NULL, hash TEXT NOT NULL))
-
-db.execute(CREATE TABLE reviews(id SERIAL PRIMARY KEY, userID INTEGER NOT NULL REFERENCES users, bookID INTEGER NOT NULL REFERENCES books, rating INTEGER NOT NULL CHECK(rating <= 5 AND rating >= 1), comment TEXT))
+# db.execute(CREATE TABLE books(id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INTEGER NOT NULL))
+# db.execute(CREATE TABLE users(id SERIAL PRIMARY KEY, firstname VARCHAR NOT NULL, surname VARCHAR NOT NULL, username VARCHAR UNIQUE NOT NULL, hash TEXT NOT NULL))
+# db.execute(CREATE TABLE reviews(id SERIAL PRIMARY KEY, userID INTEGER NOT NULL REFERENCES users, bookID INTEGER NOT NULL REFERENCES books, rating INTEGER NOT NULL CHECK(rating <= 5 AND rating >= 1), comment TEXT))
 
 # create file variable
 fname = "books.csv"
