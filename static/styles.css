@@ -102,14 +102,13 @@ body {
     }
 }
 
-/* star rating from https://www.cssscript.com/five-star-rating-system-with-pure-css-and-radio-button-hack/ */
-
+/* star rating adapted from https://www.cssscript.com/five-star-rating-system-with-pure-css-and-radio-button-hack/ & http://code.iamkate.com/html-and-css/star-rating-widget/*/
 .rating {
     overflow: hidden;
     vertical-align: bottom;
     display: inline-block;
-    width: auto;
-    height: 30px;
+    width: 7.5em;
+    height: 1.5em;
 }
 
 .rating>input {
@@ -122,17 +121,17 @@ body {
     display: block;
     float: right;
     background: url('images/star-off.svg');
-    background-size: 30px 30px;
+    background-size: contain;
 }
 
 .rating>label:before {
     display: block;
     opacity: 0;
     content: '';
-    width: 30px;
-    height: 30px;
+    width: 1.5em;
+    height: 1.5em;
     background: url('images/star-on.svg');
-    background-size: 30px 30px;
+    background-size: contain;
     transition: opacity 0.2s linear;
 }
 
