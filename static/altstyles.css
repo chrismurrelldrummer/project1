@@ -5,6 +5,11 @@
   color: red;
 }
 
+.col-md-9 h3 {
+  text-align: center;
+  margin-bottom: 0;
+}
+
 .card .btn {
   text-align: left;
 }

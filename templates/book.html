@@ -152,32 +152,31 @@ Book Details
             <div class="card-body">
                 <h5 class="card-title">Leave a review:</h5>
 
+                <div class="form-group m-auto">
+
+                    <!-- star rating trial -->
+                    <span class="rating">
+                        <input id="rating5" type="radio" name="rating" value="5">
+                        <label for="rating5">5</label>
+                        <input id="rating4" type="radio" name="rating" value="4">
+                        <label for="rating4">4</label>
+                        <input id="rating3" type="radio" name="rating" value="3" checked>
+                        <label for="rating3">3</label>
+                        <input id="rating2" type="radio" name="rating" value="2">
+                        <label for="rating2">2</label>
+                        <input id="rating1" type="radio" name="rating" value="1">
+                        <label for="rating1">1</label>
+                    </span>
+                    <!-- end of star rating trial -->
+                </div>
+
                 <div class="form-group">
-                    <div>
-                        <!-- star rating from http://code.iamkate.com/html-and-css/star-rating-widget -->
-                        <span class="starRating">
-                            <input id="rating5" type="radio" name="rating" value="5">
-                            <label for="rating5">5</label>
-                            <input id="rating4" type="radio" name="rating" value="4">
-                            <label for="rating4">4</label>
-                            <input id="rating3" type="radio" name="rating" value="3" checked>
-                            <label for="rating3">3</label>
-                            <input id="rating2" type="radio" name="rating" value="2">
-                            <label for="rating2">2</label>
-                            <input id="rating1" type="radio" name="rating" value="1">
-                            <label for="rating1">1</label>
-                        </span>
-                        <!-- end of star rating -->
-                    </div>
                     <div class="input-group mb-3">
-                        <textarea type="textarea" class="form-control" rows="5" name="addcomment" id="addcomment"></textarea>
+                        <textarea type="textarea" class="form-control" rows="5" placeholder="Review comments (optional)"
+                            name="addcomment" id="addcomment"></textarea>
                     </div>
-
                 </div>
 
-                <div class="form-group">
-
-                </div>
                 <div class="form-group">
                     <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
